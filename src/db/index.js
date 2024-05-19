@@ -3,8 +3,8 @@ import {DB_NAME} from "../constants.js";
 
 const connectDB = async()=>{
     try{
-        const url =  "mongodb+srv://anupc3214:Anup123@backendbyanup.lr3wmks.mongodb.net";
-        const connectionString = `${url}/${DB_NAME}`;
+        
+        const connectionString = `${process.env.MONGODB_URL}/${DB_NAME}`;
         console.log('Connecting to:', connectionString);  
         await mongoose.connect(connectionString);
         console.log('connected to database');
