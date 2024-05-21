@@ -1,4 +1,4 @@
-import { compareSync } from "bcrypt";
+// This file contains a middleware to store a file in local disk.
 import multer from "multer";
 
 const storage = multer.diskStorage({
