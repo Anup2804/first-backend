@@ -1,3 +1,5 @@
+// This file is for standard reponse getting.
+
 class apiresonse {
     constructor(statusCode,data,message = "Success"){
         this.statusCode = statusCode

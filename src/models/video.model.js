@@ -1,3 +1,5 @@
+// This file contains video model and plugin.
+
 import mongoose, { Schema } from "mongoose";
 import mongooseAggregatePaginate from "mongoose-aggregate-paginate-v2";
 
