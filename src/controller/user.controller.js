@@ -33,11 +33,20 @@ const requestUser = asyncHandler(async (req, res) => {
 
   const avatarlocalpath = req.files?.avatar[0]?.path;
   console.log(avatarlocalpath);
+  // use the above code when image unloading is required.
   // console.log(req.files);
 
-  const coverimagelocalpath = req.files?.coverimage[0]?.path;
-  console.log(coverimagelocalpath);
+  // const coverimagelocalpath = req.files?.coverimage[0]?.path;
+  // console.log(coverimagelocalpath);
   // console.log(req.files);
+
+  let coverimagelocalpath
+  if(req.files && Array.isArray(req.files.coverimage) && req.files.coverimage.length >0){
+    
+    coverimagelocalpath = req.files.coverimage[0].path;
+    console.log(coverimagelocalpath);
+    // use this code when image uploading in optional.
+  }
 
   if (!avatarlocalpath) {
     throw new ApiError(400, "avatar file is required.");
@@ -47,7 +56,7 @@ const requestUser = asyncHandler(async (req, res) => {
   const coverimage = await uploadoncloudnary(coverimagelocalpath);
 
   if (!avatar) {
-    throw new ApiError(400, "avatar file is required.");
+    throw new ApiError(401, "avatar file is required.");
   }
 
   const user = await User.create({
