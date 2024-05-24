@@ -1,6 +1,6 @@
 // This file is for standard reponse getting.
 
-class apiresonse {
+class apiresponse {
     constructor(statusCode,data,message = "Success"){
         this.statusCode = statusCode
         this.data =  data
@@ -9,4 +9,4 @@ class apiresonse {
     }
 }
 
-export {apiresonse}
+export {apiresponse}

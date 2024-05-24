@@ -60,7 +60,7 @@ userSchema.pre("save", async function (next) {
   // the below line checks if password is modified or not if it is then only encrypt it otherwise retrun next.
   if (!this.isModified("password")) return next();
   // If password is modified then encrypt it.
-  this.password = bcrypt.hash(this.password, 10);
+  this.password = await bcrypt.hash(this.password, 10);
   next();
 });
 
