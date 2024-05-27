@@ -3,6 +3,9 @@
 import mongoose, { Schema } from "mongoose";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const userSchema = new mongoose.Schema(
   // This is the model of user.
@@ -55,7 +58,7 @@ const userSchema = new mongoose.Schema(
 );
 
 userSchema.pre("save", async function (next) {
-  // This function return the encrypt password to stora in the database.
+  // This function return the encrypt password to store in the database.
 
   // the below line checks if password is modified or not if it is then only encrypt it otherwise retrun next.
   if (!this.isModified("password")) return next();
@@ -69,8 +72,10 @@ userSchema.methods.isPasswordCorrect = async function (password) {
   return await bcrypt.compare(password, this.password);
 };
 
+
+
 userSchema.methods.generateAccessToken = function () {
-  // This function returns the  unique jwt token of every sign up.
+  // This function returns the  unique jwt token of every sign in.
   return jwt.sign(
     {
       _id: this._id,
@@ -78,13 +83,15 @@ userSchema.methods.generateAccessToken = function () {
       _username: this.username,
     },
     process.env.ACCESS_TOKEN_SECRET,
+    
+    
     {
       expiresIn: process.env.ACCESS_TOKEN_EXPIRY,
     }
   );
 };
 userSchema.methods.generateRefreshToken = function () {
-  // This function returns the jwt refreshtoken of every sign up.
+  // This function returns the jwt refreshtoken of every sign in.
   return jwt.sign(
     {
       _id: this._id,
