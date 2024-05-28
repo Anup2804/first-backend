@@ -24,7 +24,7 @@ const generateAccessTokenAndRefreshToken = async (userId) => {
   }
 };
 
-const requestUser = asyncHandler(async (req, res) => {
+const registerUser = asyncHandler(async (req, res) => {
   // get user details from frontend.
   // validation-not empty.
   // check if user already exist: username or email.
@@ -223,7 +223,7 @@ const newRefreshAccessToken = asyncHandler(async (req, res) => {
       .json(
         new apiresponse(
           200,
-          {accesstoken, refreshtoken },
+          { accesstoken, refreshtoken },
           "refreshtoken generated"
         )
       );
@@ -250,17 +250,68 @@ const changeCurrentPassword = asyncHandler(async (req, res) => {
     .json(new apiresponse(200, "password changed successfully"));
 });
 
-const currentUser = asyncHandler(async (req, res) => {
+const getLoggedInUser = asyncHandler(async (req, res) => {
+  const userId = req.user._id;
+
+  const user = await User.findById(userId).select("-password -refreshtoken");
+
+  if (!user) {
+    throw new ApiError(404, "User not found");
+  }
+
   return res
     .status(200)
-    .json(200, req.body, "current user fetched successfully");
+    .json(
+      new apiresponse(200, user, "Logged-in user details fetched successfully")
+    );
 });
 
+const getAllUsers = asyncHandler(async (req, res) => {
+  const users = await User.find().select("-password -refreshtoken");
+  if (!users || users.length === 0) {
+    throw new ApiError(404, "No users found.");
+  }
+  return res
+    .status(200)
+    .json(new apiresponse(200, users, "Users fetched successfully."));
+});
+
+const updateAvatar = asyncHandler(async (req, res) => {
+  const avatarLocalpath = req.file?.path;
+  if (!avatarLocalpath) {
+    throw new ApiError(402, "avatar file missing");
+  }
+
+  const avatar = await uploadoncloudnary(avatarLocalpath);
+
+  if (!avatar) {
+    throw new ApiError(400, "Error is uploading avatar");
+  }
+
+  const user = await User.findByIdAndUpdate(
+    req.user._id,
+    {
+      $set: {
+        avatar: avatar.url,
+      },
+    },
+    { new: true }
+  ).select("-password");
+
+  return res
+    .status(200)
+    .json(new apiresponse(200, user, "avatar image updated"));
+});
+
+// also make a coverimage function for update
+
 export {
-  requestUser,
+  registerUser,
   loginUser,
   logoutUser,
   newRefreshAccessToken,
   changeCurrentPassword,
-  currentUser,
+  getLoggedInUser,
+  getAllUsers,
+  updateAvatar,
 };
