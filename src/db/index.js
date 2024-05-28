@@ -8,7 +8,7 @@ const connectDB = async()=>{
         
         const connectionString = `${process.env.MONGODB_URL}/${DB_NAME}`;
         // The above line has the connection string and db name.
-        console.log('Connecting to:', connectionString);  
+        // console.log('Connecting to:', connectionString);  
         await mongoose.connect(connectionString);
         console.log('connected to database');
     }catch(error){
