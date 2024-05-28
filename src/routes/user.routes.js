@@ -33,6 +33,6 @@ router.route("/logout").post(verifyjwt, logoutUser);
 router.route('/refresh-token').post(newRefreshAccessToken)
 
 
-router.route('/user-data').get(currentUser)
+// router.route('/user-data').get(currentUser)
 
 export default router;

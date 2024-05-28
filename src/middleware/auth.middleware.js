@@ -6,31 +6,31 @@ import { User } from "../models/user.model.js";
 dotenv.config();
 
 export const verifyjwt = asyncHandler(async (req, _, next) => {
-  try{
+  try {
     const token =
-    req.cookies?.accessToken ||
-    req.header("Authorization")?.replace("Bearer ", "");
+      req.cookies?.accessToken ||
+      req.header("Authorization")?.replace("Bearer ", "");
     // console.log(token)
 
-  if (!token) {
-    throw new ApiError(401, "unauthorized request");
-  }
-  const decodedtoken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+    if (!token) {
+      throw new ApiError(401, "unauthorized request");
+    }
+    const decodedtoken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
 
-// console.log(decodedtoken)
+    // console.log(decodedtoken)
 
-  const user = await User.findById(decodedtoken?._id).select(
-    "-password -refreshtoken"
-  );
+    const user = await User.findById(decodedtoken?._id).select(
+      "-password -refreshtoken"
+    );
 
-  if (!user) {
-    throw new ApiError(401, "invaild accesstoken");
-  }
+    if (!user) {
+      throw new ApiError(401, "invaild accesstoken");
+    }
 
-  req.user = user;
-//   console.log(req.user);
-  next();
-  }catch(error){
-    throw new ApiError(401,"invalid accesstoken")
+    req.user = user;
+    //   console.log(req.user);
+    next();
+  } catch (error) {
+    throw new ApiError(401, "invalid accesstoken");
   }
 });
