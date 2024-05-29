@@ -143,6 +143,7 @@ const loginUser = asyncHandler(async (req, res) => {
   const option = {
     httpOnly: true,
     secure: true,
+    // sameSite: 'strict',
   };
 
   return res
@@ -152,7 +153,7 @@ const loginUser = asyncHandler(async (req, res) => {
     .json(
       new apiresponse(
         200,
-        { user: loggedinUser, generateAccessToken, generateRefreshToken },
+        { user: loggedinUser, generateAccessToken,generateRefreshToken },
         "user login successful."
       )
     );
@@ -186,6 +187,8 @@ const logoutUser = asyncHandler(async (req, res) => {
 });
 
 const newRefreshAccessToken = asyncHandler(async (req, res) => {
+
+  // the problem in postman of duplicate accesstoken is getting  from here.
   const incomingRefreshToken =
     req.cookies.refreshtoken || req.body.refreshtoken;
 
@@ -219,7 +222,7 @@ const newRefreshAccessToken = asyncHandler(async (req, res) => {
 
     return res
       .status(200)
-      .cookie("accesstoken", generateAccessToken, options)
+      // .cookie("accesstoken", generateAccessToken, options)
       .cookie("refreshtoken", generateRefreshToken, options)
       .json(
         new apiresponse(
@@ -443,5 +446,5 @@ export {
   updateAvatar,
   getUserChannelProfile,
   getWatchHistory
-  
+
 };
