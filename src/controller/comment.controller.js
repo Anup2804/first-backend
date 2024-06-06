@@ -36,7 +36,43 @@ const addComment = asyncHandler(async (req, res) => {
     owner: owner._id,
   });
 
-  res.status(200).json(new apiresponse(200, newComment, "comment done"));
+  const commentResult = await Comment.aggregate([
+    {
+      $match: {
+        _id: newComment._id,
+      },
+    },
+    {
+      $lookup: {
+        from: "users",
+        localField: "owner",
+        foreignField: "_id",
+        as: "ownerDetails",
+      },
+    },
+    {
+      $unwind: "$ownerDetails",
+    },
+    {
+      $project:{
+        _id:1,
+        video:1,
+        comment:1,  
+        owner:{
+          username:'$ownerDetails.username',
+          avatar:'$ownerDetails.avatar'
+        },
+        createdAt: 1,
+        updatedAt: 1
+      }
+    }
+  ]);
+
+  if(!commentResult || commentResult.length === 0){
+    throw new ApiError(500, 'Failed to retrieve the added comment');
+  }
+
+  res.status(200).json(new apiresponse(200,commentResult[0], "comment done"));
 });
 
 const updateComment = asyncHandler(async (req, res) => {
@@ -78,7 +114,7 @@ const deleteComment = asyncHandler(async (req, res) => {
 
   await Comment.findByIdAndDelete(id);
 
-  res.status(200).json(new apiresponse(200,'comment deleted'));
+  res.status(200).json(new apiresponse(200, "comment deleted"));
 });
 
 export { getVideoComments, addComment, updateComment, deleteComment };
