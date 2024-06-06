@@ -3,7 +3,7 @@
 import mongoose, { Schema } from "mongoose";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
-import dotenv from 'dotenv';
+import dotenv from "dotenv";
 
 dotenv.config();
 
@@ -72,8 +72,6 @@ userSchema.methods.isPasswordCorrect = async function (password) {
   return await bcrypt.compare(password, this.password);
 };
 
-
-
 userSchema.methods.generateAccessToken = function () {
   // This function returns the  unique jwt token of every sign in.
   return jwt.sign(
@@ -83,8 +81,7 @@ userSchema.methods.generateAccessToken = function () {
       _username: this.username,
     },
     process.env.ACCESS_TOKEN_SECRET,
-    
-    
+
     {
       expiresIn: process.env.ACCESS_TOKEN_EXPIRY,
     }

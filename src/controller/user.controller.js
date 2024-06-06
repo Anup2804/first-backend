@@ -153,7 +153,7 @@ const loginUser = asyncHandler(async (req, res) => {
     .json(
       new apiresponse(
         200,
-        { user: loggedinUser, generateAccessToken,generateRefreshToken },
+        { user: loggedinUser, generateAccessToken, generateRefreshToken },
         "user login successful."
       )
     );
@@ -183,11 +183,10 @@ const logoutUser = asyncHandler(async (req, res) => {
     .status(200)
     .clearCookie("accessToken", option)
     .clearCookie("refreshtoken", option)
-    .json(new apiresponse(200,{}, "User logout successful"));
+    .json(new apiresponse(200, {}, "User logout successful"));
 });
 
 const newRefreshAccessToken = asyncHandler(async (req, res) => {
-
   // the problem in postman of duplicate accesstoken is getting  from here.
   const incomingRefreshToken =
     req.cookies.refreshtoken || req.body.refreshtoken;
@@ -220,17 +219,19 @@ const newRefreshAccessToken = asyncHandler(async (req, res) => {
     const { generateAccessToken, generateRefreshToken } =
       await generateAccessTokenAndRefreshToken(user._id);
 
-    return res
-      .status(200)
-      // .cookie("accesstoken", generateAccessToken, options)
-      .cookie("refreshtoken", generateRefreshToken, options)
-      .json(
-        new apiresponse(
-          200,
-          { accesstoken, refreshtoken },
-          "refreshtoken generated"
+    return (
+      res
+        .status(200)
+        // .cookie("accesstoken", generateAccessToken, options)
+        .cookie("refreshtoken", generateRefreshToken, options)
+        .json(
+          new apiresponse(
+            200,
+            { accesstoken, refreshtoken },
+            "refreshtoken generated"
+          )
         )
-      );
+    );
   } catch (error) {
     throw new ApiError(401, error?.message || "invaild refresh token.");
   }
@@ -311,7 +312,6 @@ const updateAvatar = asyncHandler(async (req, res) => {
 
 // The below function is made to right the aggreation pipeline.
 
-
 const getUserChannelProfile = asyncHandler(async (req, res) => {
   // This function aggregates the subscribers and users collections
   // and also contains the pipeline for channels you subscribed to and users
@@ -374,65 +374,64 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(new apiresponse(200, channel[0], "user channel fetched successfully"));
+    .json(
+      new apiresponse(200, channel[0], "user channel fetched successfully")
+    );
 });
 
-
 const getWatchHistory = asyncHandler(async (req, res) => {
-  
-    const user = await User.aggregate([
-      {
-        $match: {
-          _id:  new mongoose.Types.ObjectId(req.user._id),
-        },
+  const user = await User.aggregate([
+    {
+      $match: {
+        _id: new mongoose.Types.ObjectId(req.user._id),
       },
-      {
-        $lookup: {
-          from: "videos",
-          localField: "watchHistory",
-          foreignField: "_id",
-          as: "watchHistory",
-          // this part is called subpipeline.
-          pipeline: [
-            {
-              $lookup: {
-                from: "users",
-                localField: "owner",
-                foreignField: "_id",
-                as: "owner",
-                pipeline: [
-                  {
-                    $project: {
-                      fullname: 1,
-                      username: 1,
-                      avatar: 1,
-                    },
+    },
+    {
+      $lookup: {
+        from: "videos",
+        localField: "watchHistory",
+        foreignField: "_id",
+        as: "watchHistory",
+        // this part is called subpipeline.
+        pipeline: [
+          {
+            $lookup: {
+              from: "users",
+              localField: "owner",
+              foreignField: "_id",
+              as: "owner",
+              pipeline: [
+                {
+                  $project: {
+                    fullname: 1,
+                    username: 1,
+                    avatar: 1,
                   },
-                ],
-              },
-            },
-            {
-              $addFields: {
-                owner: {
-                  $arrayElemAt: ['$owner',0],
                 },
+              ],
+            },
+          },
+          {
+            $addFields: {
+              owner: {
+                $arrayElemAt: ["$owner", 0],
               },
             },
-          ],
-        },
+          },
+        ],
       },
-    ]);
-  
-    return res
-      .status(200)
-      .json(
-        new apiresponse(
-          200,
-          user[0].watchHistory,
-          "Watch history fetched sucessfully"
-        )
-      );
-  
+    },
+  ]);
+
+  return res
+    .status(200)
+    .json(
+      new apiresponse(
+        200,
+        user[0].watchHistory,
+        "Watch history fetched sucessfully"
+      )
+    );
 });
 
 export {
@@ -445,6 +444,5 @@ export {
   getAllUsers,
   updateAvatar,
   getUserChannelProfile,
-  getWatchHistory
-
+  getWatchHistory,
 };

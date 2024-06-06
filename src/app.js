@@ -45,10 +45,16 @@ app.use(express.json({ limit: "1mb" })),
 // routes import
 
 import userRouter from "./routes/user.routes.js";
+import videoRouter from "./routes/video.routes.js"
+import commentRouter from './routes/comment.routes.js'
 
 // routes declartion
 
 app.use("/api/v1/user", userRouter);
+
+app.use('/api/v1/user/video',videoRouter)
+
+app.use('/api/v1/user/comment',commentRouter)
 
 export { app };
 
